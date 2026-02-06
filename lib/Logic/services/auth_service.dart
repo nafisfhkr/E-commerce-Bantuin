@@ -2,6 +2,7 @@ import 'package:bantuin/Logic/model/auth_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:bantuin/Logic/model/role_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
@@ -260,6 +261,51 @@ class AuthService {
       case 'invalid-email': return 'Format email tidak valid.';
       case 'wrong-password': return 'Password salah.';
       default: return 'Terjadi kesalahan: ${e.message}';
+    }
+  }
+
+  Future<RoleUpdateModel?> validateUserForRole(String email, String password, String targetRole) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+      );
+      
+      final uid = userCredential.user!.uid;
+      final userDoc = await _firestore.collection('users').doc(uid).get();
+      
+      if (userDoc.exists) {
+        var rolesData = userDoc.data()!['role'];
+        List<String> roles = rolesData is List ? List<String>.from(rolesData) : [rolesData.toString()];
+
+        return RoleUpdateModel(
+          email: email,
+          targetRole: targetRole,
+          currentRoles: roles,
+        );
+      }
+      return null;
+    } catch (e) {
+      rethrow; 
+    }
+  }
+
+  
+  Future<bool> finalizeRoleAddition(RoleUpdateModel data) async {
+    try {
+      final uid = _auth.currentUser!.uid;
+      List<String> updatedRoles = List.from(data.currentRoles);
+      
+      if (!updatedRoles.contains(data.targetRole)) {
+        updatedRoles.add(data.targetRole);
+      }
+      
+      await _firestore.collection('users').doc(uid).update({'role': updatedRoles});
+      await _createRoleDocument(uid, data.targetRole);
+      
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

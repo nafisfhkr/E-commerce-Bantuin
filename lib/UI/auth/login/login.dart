@@ -7,7 +7,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bantuin/UI/auth/VerifikasiEmailPage.dart';
 import 'package:bantuin/UI/auth/ForgotPasswordPage.dart';
-
 import 'package:bantuin/Logic/services/auth_service.dart';
 import 'package:bantuin/Logic/model/auth_model.dart';
 
@@ -35,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
   int _failedAttempts = 0;
   static const int _maxFailedAttempts = 3;
 
-  /// --- FUNGSI INI DITULIS ULANG (JADI LEBIH BERSIH) ---
   Future<void> _signInWithGoogle(BuildContext context) async {
     if (_isProcessing) return;
     
@@ -43,30 +41,27 @@ class _LoginPageState extends State<LoginPage> {
       _isProcessing = true;
     });
     
-    // Panggil service
     final result = await _authService.signInWithGoogle(_selectedLoginRole);
 
     setState(() {
       _isProcessing = false;
     });
 
-    // UI hanya bereaksi terhadap hasil dari service
     _handleAuthResult(result);
   }
 
-  /// --- FUNGSI INI DITULIS ULANG (JADI LEBIH BERSIH) ---
+  
   Future<void> _signInWithEmailPassword(BuildContext context) async {
     if (_isProcessing) return;
-    
-    // 1. MULAI STOPWATCH
+   
     final stopwatch = Stopwatch()..start();
-    print('🚀 Test Dimulai: Tombol ditekan');
+    print('Test Dimulai');
 
     setState(() {
       _isProcessing = true;
     });
     
-    // Panggil service
+    
     final result = await _authService.signInWithEmailPassword(
       _emailController.text,
       _passwordController.text,
@@ -74,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     stopwatch.stop();
-    print('🏁 Test Selesai. Durasi Login: ${stopwatch.elapsedMilliseconds} ms');
+    print(' Test Selesai. Durasi Login: ${stopwatch.elapsedMilliseconds} ms');
 
     setState(() {
       _isProcessing = false;
@@ -108,20 +103,18 @@ class _LoginPageState extends State<LoginPage> {
         break;
 
       case AuthStatus.inputError:
-        // Tampilkan error validasi dari service
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(result.errorMessage ?? 'Input tidak valid.')),
         );
         break;
 
       case AuthStatus.error:
-        // Handle error login (misal: password salah)
         _failedAttempts++;
         String errorMessage = result.errorMessage ?? 'Login gagal.';
 
         if (_failedAttempts >= _maxFailedAttempts) {
           _showTooManyAttemptsDialog(context);
-          return; // Hentikan snackbar biasa
+          return; 
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(ctx).pop(); // Tutup dialog
+              Navigator.of(ctx).pop(); 
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
