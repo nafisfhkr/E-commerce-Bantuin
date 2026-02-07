@@ -46,7 +46,7 @@ dependencies:
   shared_preferences: ^2.3.2
   firebase_messaging: ^15.2.5
   http: ^1.2.2
-  # flutter_local_notifications: ^19.2.1
+  flutter_local_notifications: ^19.2.1
   carousel_slider: ^5.0.0
   image_picker: ^1.0.7 
   firebase_storage: ^12.4.6 
@@ -85,8 +85,85 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
+assets:
     - assets/images/googlelogo.png
+    - assets/images/logobantuin.svg
+    - assets/images/email_icon.svg
+    - assets/images/kendaraan.png
+    - assets/images/elektronik.png
+    - assets/images/mobil2.jpeg
+    - assets/images/bintang.JPG
+    - assets/images/fotochat.jpg
+    - assets/images/Mbarang.svg
+    - assets/images/Mpenghasilan.svg
+    - assets/images/pelayanan.svg
+    - assets/images/vehicles/mobil/bak.png
+    - assets/images/mobil.png
+    - assets/images/vehicles/mobil/sedan.png
+    - assets/images/vestic.png
+    - assets/images/vehicles/mobil/family.png
+    - assets/images/workshop.png
+    - assets/images/mobil_bmw.png
+    - assets/images/office.png
+    - assets/images/profile.png
+    - assets/images/oli.png
+    - assets/images/telpon.png
+    - assets/images/rider.png
+    - assets/images/motor.png
+    - assets/images/otw.png
+    - assets/images/diperbaiki.png
+    - assets/images/cari.png
+    - assets/images/selesai.png
+    - assets/images/bayar.png
+    - assets/images/vehicles/motor/bebek.png
+    - assets/images/vehicles/motor/matic.png
+    - assets/images/vehicles/motor/cruiser.png
+    - assets/images/vehicles/motor/Trail.png
+    - assets/images/vehicles/mobil/sport.png
+    - assets/images/ban.png
+    - assets/images/mogok.png
+    - assets/images/ac.png
+    - assets/images/banner1.png
+    - assets/images/banner2.png
+    - assets/images/banner3.png
+    - assets/images/beranda.png
+    - assets/images/pesanan.png
+    - assets/images/pesan.png
+    - assets/images/pengaturan.png
+    - assets/images/backgroundselesai.png
+    - assets/images/chat.png
+    - assets/images/penghasilan.png
+    - assets/images/layanan.png
+    - assets/images/ulasan2.png
+    - assets/images/barang.png
+
+    - assets/images/elektronik/rumahtangga/dapur.png
+    - assets/images/elektronik/rumahtangga/pembersih.png
+    - assets/images/elektronik/rumahtangga/pendingin.png
+    - assets/images/elektronik/kantor/audio dan visual.png
+    - assets/images/elektronik/kantor/hp dan aksesoris.png
+    - assets/images/elektronik/kantor/komputer dan aksesoris.png
+    - assets/images/elektronik/kantor/lain-lain.png
+    - assets/images/elektronik/rumah tangga.png
+    - assets/images/elektronik/kantor.png
+    - assets/images/elektronik/layanan/perawatan.png
+    - assets/images/elektronik/layanan/perbaikan mesin.png
+    - assets/images/elektronik/layanan/perbaikan layar.png
+    - assets/images/elektronik/layanan/instalasi.png
+    - assets/images/elektronik/layanan/lain-lain.png
+    - assets/images/status_completed.png
+    - assets/images/status_processing.png
+    - assets/images/status_work_done.png
+    - assets/images/status_rejected.png
+    - assets/images/status_default.png
+    - assets/images/status_pending.png
+    - assets/images/porsche.png
+    - assets/images/asap.png
+    - assets/images/bantuin.png
+    - assets/images/animasi.png
+    - assets/images/email.png
+    - assets/images/email2.png
+    - assets/images/logo_bantuin.png
    
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'package:bantuin/UI/chat/chatList.dart';
+import 'package:bantuin/UI/notifikasi/notifikasiPelanggan.dart';
+import 'package:bantuin/UI/pelanggan/pelangganOrders.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// IMPORT SESUAI STRUKTUR BARU JKW
+
 import 'package:bantuin/main.dart';
-import 'package:bantuin/Logic/services/customer_service.dart';
+import 'package:bantuin/Logic/services/pelanggan_service.dart';
+import 'package:bantuin/UI/pelanggan/pelangganSettingPage.dart';
 
 class CustomerDashboard extends StatefulWidget {
   const CustomerDashboard({super.key});
@@ -99,9 +103,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           Expanded(child: SingleChildScrollView(padding: const EdgeInsets.all(16.0), child: Column(children: [_buildPromoBanner(), const SizedBox(height: 24), _buildServiceSection(context)])))
         ]);
         break;
-      case 1: currentBody = const CustomerOrdersScreen(); break;
+      case 1: currentBody = const CustomerOrderHistoryScreen(); break;
       case 2: currentBody = const ChatListPage(); break;
-      case 3: currentBody = const PengaturanScreen(); break;
+      case 3: currentBody = const CustomerSettingsScreen(); break;
       default: currentBody = const Center(child: Text('Not Found'));
     }
 
@@ -112,7 +116,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     );
   }
 
-  // --- WIDGET UI ASLI (TIDAK BERUBAH) ---
+  
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -157,7 +161,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   Widget _buildServiceCard(String title, String imagePath, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const VehicleServicePage() : const ElectronicServicePage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const ChatListPage() : const ChatListPage()));  // sementara karena belum tak migrasi yang folder orders (harus e order)
       },
       child: Column(children: [
         Container(

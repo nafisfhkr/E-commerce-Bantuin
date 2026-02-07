@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _handleRegister() async {
     if (_isProcessing) return;
 
-    // Validasi Sederhana
+
     if (_emailController.text.isEmpty) {
       _showSnackBar('Email tidak boleh kosong');
       return;
