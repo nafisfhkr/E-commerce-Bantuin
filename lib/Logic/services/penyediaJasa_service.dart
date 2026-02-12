@@ -7,7 +7,7 @@ class ProviderService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // --- DASHBOARD & NOTIFIKASI ---
+
   Stream<DocumentSnapshot> getProviderStream(String uid) {
     return _db.collection('users').doc(uid).snapshots();
   }

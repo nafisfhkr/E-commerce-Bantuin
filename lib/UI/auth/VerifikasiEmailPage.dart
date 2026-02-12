@@ -38,7 +38,7 @@ class _VerifikasiEmailPageState extends State<VerifikasiEmailPage> {
       final isVerified = await _authService.checkEmailVerified();
       
       if (isVerified) {
-        // Jika sukses, arahkan ke Profile Setup
+        
         if (!mounted) return;
         Navigator.pushReplacementNamed(
           context, 

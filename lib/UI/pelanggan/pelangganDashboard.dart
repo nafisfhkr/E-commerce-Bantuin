@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bantuin/UI/chat/chatList.dart';
 import 'package:bantuin/UI/notifikasi/notifikasiPelanggan.dart';
+import 'package:bantuin/UI/orders/elektronikOrders.dart';
+import 'package:bantuin/UI/orders/kendaraanOrders.dart';
 import 'package:bantuin/UI/pelanggan/pelangganOrders.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -161,7 +163,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   Widget _buildServiceCard(String title, String imagePath, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const ChatListPage() : const ChatListPage()));  // sementara karena belum tak migrasi yang folder orders (harus e order)
+        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const VehicleServicePage() : const ElectronicServicePage()));  // sementara karena belum tak migrasi yang folder orders (harus e order)
       },
       child: Column(children: [
         Container(

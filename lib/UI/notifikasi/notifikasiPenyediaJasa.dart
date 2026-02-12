@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart'; // Pastikan sudah ada di pubspec.yaml
-import 'package:google_fonts/google_fonts.dart'; // Tambahkan untuk font yang lebih menarik
+import 'package:intl/intl.dart'; 
+import 'package:google_fonts/google_fonts.dart'; 
 
 class NotificationProviderScreen extends StatelessWidget {
   final String orderId;
@@ -11,8 +11,7 @@ class NotificationProviderScreen extends StatelessWidget {
 
  
   String _timeAgo(DateTime dateTime) {
-    // Penyesuaian untuk Waktu Indonesia Barat (WIB) UTC+7
-    // Jika server Anda menyimpan UTC, dan aplikasi Anda ingin menampilkan dalam WIB.
+   
     final nowUtc = DateTime.now().toUtc();
     final dateTimeUtc = dateTime.toUtc(); // Pastikan dateTime juga dikonversi ke UTC jika belum
 
