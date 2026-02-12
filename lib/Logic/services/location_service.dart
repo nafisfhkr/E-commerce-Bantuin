@@ -34,16 +34,16 @@ class LocationService {
       throw Exception('Izin lokasi ditolak permanen, buka pengaturan untuk mengubahnya');
     }
 
-    // Memperbarui lokasi setiap 15 detik
+    
     _locationTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       _updateLocation();
     });
 
-    // Update lokasi pertama kali
+   
     await _updateLocation();
   }
 
-  // Menghentikan tracking lokasi
+ 
   Future<void> stopTracking() async {
     _locationTimer?.cancel();
     _locationTimer = null;
@@ -51,7 +51,6 @@ class LocationService {
     _isTracking = false;
   }
 
-  // Memperbarui lokasi penyedia jasa di Firestore
   Future<void> _updateLocation() async {
     try {
       if (!_isTracking || _currentOrderId == null) return;
@@ -59,10 +58,8 @@ class LocationService {
       User? user = _auth.currentUser;
       if (user == null) return;
 
-      // Mendapatkan posisi GPS saat ini
       Position position = await Geolocator.getCurrentPosition();
 
-      // Update lokasi di dokumen pesanan
       await _firestore.collection('pesanan').doc(_currentOrderId).update({
         'lokasi_penyedia': {
           'latitude': position.latitude,
@@ -71,7 +68,6 @@ class LocationService {
         },
       });
 
-      // Simpan juga history lokasi
       await _firestore
           .collection('pesanan')
           .doc(_currentOrderId)
@@ -87,7 +83,6 @@ class LocationService {
     }
   }
 
-  // Getter
   bool get isTracking => _isTracking;
   String? get currentOrderId => _currentOrderId;
 }

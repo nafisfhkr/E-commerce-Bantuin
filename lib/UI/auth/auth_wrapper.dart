@@ -1,7 +1,7 @@
+import 'package:bantuin/UI/opening/opening1.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bantuin/UI/auth/role_redirector.dart'; 
-import 'package:bantuin/UI/auth/login/login.dart'; 
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -22,8 +22,8 @@ class AuthWrapper extends StatelessWidget {
           return const RoleRedirector(); 
         }
 
-        // Jika user belum login
-        return LoginPage(); 
+        
+        return SplashScreen(); 
       },
     );
   }
