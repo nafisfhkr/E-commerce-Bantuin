@@ -31,12 +31,10 @@ class _ConfirmAddRolePageState extends State<ConfirmAddRolePage> {
     
     setState(() => _isProcessing = true);
     
-    // Memanggil fungsi finalisasi di service dengan mengirimkan model data
     final success = await _authService.finalizeRoleAddition(widget.roleData);
 
     if (success) {
       if (!mounted) return;
-      // Navigasi ke halaman pengisian profil
       Navigator.pushNamedAndRemoveUntil(
         context, 
         '/profile_setup', 

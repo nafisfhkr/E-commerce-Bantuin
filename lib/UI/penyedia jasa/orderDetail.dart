@@ -23,7 +23,6 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
   bool _isSavingPrice = false;
   bool _isMarkingWorkDone = false;
 
-  // --- LOGIKA ASLI (TIDAK BERUBAH) ---
 
   Future<void> _markWorkAsDone() async {
     setState(() => _isMarkingWorkDone = true);
@@ -75,7 +74,6 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
     }
   }
 
-  // --- HELPER FUNCTIONS ---
 
   String _formatDate(Timestamp? timestamp) {
     if (timestamp == null) return 'Data Waktu Tidak Ada';
@@ -160,7 +158,6 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
                 _buildCustomerInfoSection(customerId),
                 const SizedBox(height: 5),
                 
-                // --- KARTU AKSI DINAMIS ---
                 if (status == 'accepted' || status == 'processing') _buildMarkWorkDoneSection(),
                 if (status == 'work_done') _buildSetPriceSection(finalAmount),
                 if (paymentStatus == 'paid' && status != 'completed') _buildConfirmPaymentSection(),
@@ -172,7 +169,6 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
     );
   }
 
-  // --- UI WIDGETS (TETAP SAMA SEPERTI ASLI) ---
 
   Widget _buildStatusCard(String status, Map<String, dynamic> orderData) {
     return Container(
@@ -229,11 +225,11 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
   }
 
   Widget _buildItemOrderSection(Map<String, dynamic> orderData) {
-    return Container(); // Gunakan desain ItemOrder Anda sebelumnya
+    return Container(); 
   }
 
   Widget _buildProblemSection(Map<String, dynamic> orderData) {
-    return Container(); // Gunakan desain Kendala Anda sebelumnya
+    return Container(); 
   }
 
   Widget _buildCustomerInfoSection(String customerId) {
@@ -295,7 +291,7 @@ class _ProviderOrderDetailScreenState extends State<ProviderOrderDetailScreen> {
   }
 
   Widget _buildConfirmPaymentSection() {
-    return Container(); // Desain tombol konfirmasi pembayaran Anda
+    return Container(); 
   }
 
   Widget _buildInfoRow(String label, String value) {

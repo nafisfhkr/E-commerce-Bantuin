@@ -29,7 +29,7 @@ class OnboardingScreen1 extends StatelessWidget {
             color: Colors.black.withOpacity(0.3),
           ),
           
-          // Teks "Selamat Datang" di tengah gambar
+       
           Positioned(
             top: 150,
             left: 20,

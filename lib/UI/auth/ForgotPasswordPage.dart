@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// Import Service
 import 'package:bantuin/Logic/services/auth_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {

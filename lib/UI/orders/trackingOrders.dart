@@ -31,7 +31,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   void initState() {
     super.initState();
     _setupOrderStream();
-    // Refresh UI setiap 30 detik
     _refreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) setState(() {});
     });
@@ -60,7 +59,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       setState(() {
         _orderData = snapshot.data() as Map<String, dynamic>;
         
-        // Update lokasi customer
         if (_orderData!.containsKey('lokasi_destinasi')) {
           var lokasiData = _orderData!['lokasi_destinasi'];
           _customerLocation = LatLng(
@@ -127,13 +125,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       );
     }
 
-    // Menentukan status pesanan
     String orderStatus = _orderData?['status'] ?? 'pending';
     
     return Scaffold(
       body: Stack(
         children: [
-          // Peta untuk tracking
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -160,7 +156,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 
               MarkerLayer(
                 markers: [
-                  // Marker lokasi customer
                   if (_customerLocation != null)
                     Marker(
                       point: _customerLocation!,
@@ -169,7 +164,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       child: const Icon(Icons.location_pin, color: Colors.red, size: 30),
                     ),
                     
-                  // Marker lokasi penyedia jasa
                   if (_providerLocation != null)
                     Marker(
                       point: _providerLocation!,
@@ -189,7 +183,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             ],
           ),
           
-          // Panel detail pesanan di bagian bawah
           Positioned(
             bottom: 0,
             left: 0,
@@ -204,7 +197,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Status pesanan
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -267,7 +259,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                             IconButton(
                               icon: const Icon(Icons.phone, color: Colors.green),
                               onPressed: () {
-                                // Implementasi panggilan telepon
                               },
                             ),
                           ],
@@ -276,7 +267,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       ],
                     ),
                   
-                  // Detail layanan
                   const Text(
                     'Detail Layanan:',
                     style: TextStyle(
@@ -297,7 +287,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Implementasi batalkan pesanan
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -307,13 +296,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       ),
                     ),
                   
-                  // Tombol selesai jika sudah accepted
                   if (orderStatus == 'accepted')
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Implementasi konfirmasi selesai
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -331,7 +318,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     );
 
   }
-  // Widget helper untuk menampilkan detail pesanan
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -344,7 +330,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     );
   }
 
-  // Helper function untuk nama layanan
   String _getServiceName(String service) {
     switch (service) {
       case 'oil':
@@ -360,7 +345,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     }
   }
 
-  // Helper function untuk teks status
   String _getStatusText(String status) {
     switch (status) {
       case 'pending':

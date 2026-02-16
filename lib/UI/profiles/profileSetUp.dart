@@ -12,8 +12,8 @@ class ProfileSetupPage extends StatefulWidget {
 ProfileSetupPage({
     Key? key,
     required this.role,
-    this.auth,      // Tambahkan
-    this.firestore, // Tambahkan
+    this.auth,      
+    this.firestore, 
   }) : super(key: key);  
   @override
   _ProfileSetupPageState createState() => _ProfileSetupPageState();
@@ -34,15 +34,15 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   
-  // Provider specific controllers
+
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _businessAddressController = TextEditingController();
   
-  String _selectedCategory = 'Otomotif'; // default untuk provider
+  String _selectedCategory = 'Otomotif';
   bool _isProcessing = false;
 
-  // Daftar kategori yang tersedia
+  
   final List<String> _availableCategories = [
     'Otomotif', 
     'Elektronik', 
@@ -88,14 +88,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             _businessAddressController.text = data['alamat_usaha'] ?? '';
             _phoneController.text = data['nomor_hp'] ?? '';
             
-            // Validasi nilai kategori dari database
+        
             String kategoriDariDB = data['kategori'] ?? 'Otomotif';
             
-            // Cek apakah nilai dari database ada dalam daftar
+           
             if (_availableCategories.contains(kategoriDariDB)) {
               _selectedCategory = kategoriDariDB;
             } else {
-              // Jika tidak ada, gunakan nilai default
+            
               _selectedCategory = 'Otomotif';
             }
           });
@@ -151,9 +151,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       ),
                       SizedBox(height: 24),
                       
-                      // Form fields sesuai role
+                     
                       if (widget.role == 'customer') ...[
-                        // Form untuk customer
                         TextField(
                           controller: _nameController,
                           decoration: InputDecoration(
@@ -184,7 +183,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                           ),
                         ),
                       ] else ...[
-                        // Form untuk provider
                         TextField(
                           controller: _businessNameController,
                           decoration: InputDecoration(
@@ -287,7 +285,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   Future<void> _saveProfile(BuildContext context) async {
     if (_isProcessing) return;
     
-    // Validasi input
     if (widget.role == 'customer') {
       if (_nameController.text.trim().isEmpty ||
           _phoneController.text.trim().isEmpty ||
@@ -321,7 +318,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       }
       
       if (widget.role == 'customer') {
-        // Update data customer
         await _firestore.collection('customers').doc(uid).update({
           'nama': _nameController.text.trim(),
           'alamat': _addressController.text.trim(),
@@ -329,7 +325,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           'updatedAt': FieldValue.serverTimestamp(),
         });
       } else {
-        // Update data provider
         await _firestore.collection('providers').doc(uid).update({
           'nama_usaha': _businessNameController.text.trim(),
           'deskripsi': _descriptionController.text.trim(),
@@ -340,7 +335,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         });
       }
       
-      // Navigasi ke dashboard sesuai role
       _navigateToDashboard();
       
     } catch (e) {

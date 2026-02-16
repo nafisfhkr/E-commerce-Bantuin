@@ -28,7 +28,7 @@ class ProviderService {
     return true;
   }
 
-  // --- KELOLA PESANAN (MengeolahPesanan) ---
+  
   Stream<List<QueryDocumentSnapshot>> getCombinedOrdersStream(String uid) {
     Stream<QuerySnapshot> pending = _db.collection('orders')
         .where('status', isEqualTo: 'pending')

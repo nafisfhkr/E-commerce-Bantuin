@@ -24,7 +24,6 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
   TextEditingController lokasiController = TextEditingController();
   Position? _currentPosition;
 
-  // ... (Gunakan carCategories dan motorcycleCategories yang sama persis) ...
   final Map<String, Map<String, dynamic>> carCategories = {
     'sedan': {'label': 'Sedan', 'image': 'assets/images/vehicles/mobil/sedan.png'},
     'family': {'label': 'Family Car', 'image': 'assets/images/vehicles/mobil/family.png'},
@@ -45,7 +44,7 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
     _getCurrentLocation();
   }
 
-  // ... (Gunakan fungsi _getCurrentLocation asli Anda) ...
+  
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
@@ -101,7 +100,6 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
 
 @override
   Widget build(BuildContext context) {
-    // ... (Tampilan UI tetap sama persis dengan code pertama) ...
     return Scaffold(
       backgroundColor: const Color(0xFFF1F1F0),
       appBar: AppBar(
@@ -262,7 +260,7 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
     );
   }
 
-  // ... (Gunakan semua widget helper seperti _buildDynamicCategorySection, dll) ...
+  
   Widget _buildDynamicCategorySection() {
     final categoriesToShow = selectedVehicleType == 'mobil' ? carCategories : motorcycleCategories;
 

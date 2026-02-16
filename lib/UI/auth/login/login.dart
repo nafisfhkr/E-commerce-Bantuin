@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseFirestore.instance,
     GoogleSignIn(),
   );
-  // -----------------------
+  
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
 
     switch (result.status) {
       case AuthStatus.success:
-        _failedAttempts = 0; // Reset counter
+        _failedAttempts = 0; 
         _navigateToDashboard(result.role!);
         break;
 
@@ -305,7 +305,6 @@ class _LoginPageState extends State<LoginPage> {
                         ElevatedButton(
                           onPressed: _isProcessing
                               ? null
-                              // Panggil fungsi yang sudah di-refactor
                               : () => _signInWithEmailPassword(context),
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(double.infinity, 50),
@@ -368,7 +367,7 @@ class _LoginPageState extends State<LoginPage> {
                           key: const Key('google_login_button'),
                           onPressed: _isProcessing
                               ? null
-                              // Panggil fungsi yang sudah di-refactor
+                             
                               : () => _signInWithGoogle(context),
                           style: OutlinedButton.styleFrom(
                             minimumSize: Size(double.infinity, 50),

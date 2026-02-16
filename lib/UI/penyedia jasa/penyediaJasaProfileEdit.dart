@@ -1,4 +1,3 @@
-// File: lib/penyedia jasa/provider_profile_edit_screen.dart (FILE BARU)
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -19,13 +18,11 @@ class _ProviderProfileEditScreenState extends State<ProviderProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _currentUser = FirebaseAuth.instance.currentUser;
 
-  // Controllers untuk setiap field
   final _namaUsahaController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _alamatUsahaController = TextEditingController();
   final _nomorHpController = TextEditingController();
 
-  // State untuk data lain
   String? _photoUrl;
   File? _imageFile;
   bool _isElectronic = false;
@@ -75,7 +72,7 @@ class _ProviderProfileEditScreenState extends State<ProviderProfileEditScreen> {
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
 
     if (pickedFile != null && mounted) {
-      setState(() { _isSaving = true; }); // Tampilkan loading saat upload
+      setState(() { _isSaving = true; }); 
       _imageFile = File(pickedFile.path);
 
       try {

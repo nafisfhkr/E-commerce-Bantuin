@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         '/opening_animation': (context) => const OpeningAnimationScreen(),
         '/auth_wrapper': (context) => const AuthWrapper(),
         '/login1': (context) => LoginPage(),
-        '/register1': (context) => const RegisterPage(),
+        '/register1': (context) =>  RegisterPage(),
         '/dashboard_customer': (context) => const CustomerDashboard(),
         '/dashboard_provider': (context) => const ProviderDashboard(),
         '/customer_history': (context) => const CustomerOrderHistoryScreen(),

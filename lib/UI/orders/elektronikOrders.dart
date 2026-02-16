@@ -3,9 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
-import 'package:bantuin/UI/maps/peta_driver.dart';
 import 'package:bantuin/Logic/services/order_service.dart';
 
 class ElectronicServicePage extends StatefulWidget {
@@ -26,7 +23,6 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
   TextEditingController lokasiController = TextEditingController();
   Position? _currentPosition;
 
-  // ... (Gunakan data mainElectronicCategories dan electronicServices asli) ...
   final Map<String, Map<String, dynamic>> mainElectronicCategories = {
     'household': {
       'label': 'Rumah Tangga',
@@ -256,7 +252,6 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
     }
   }
 
-  // Fungsi untuk mengkapitalisasi huruf pertama setiap kata
   String _capitalizeEachWord(String? text) {
     if (text == null || text.isEmpty) return '';
     return text
@@ -270,7 +265,6 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
 
   @override
   Widget build(BuildContext context) {
-    // ... (Tampilan UI tetap sama persis dengan kode asli Anda) ...
     final currentSubCategories =
         mainElectronicCategories[selectedElectronicType]?['subcategories'] as Map<String, dynamic>? ?? {};
 

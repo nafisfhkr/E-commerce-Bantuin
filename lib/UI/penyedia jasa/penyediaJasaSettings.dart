@@ -1,6 +1,6 @@
 
 
-import 'package:bantuin/UI/auth/login/login.dart'; // Pastikan path ke halaman login Anda benar
+import 'package:bantuin/UI/auth/login/login.dart'; 
 import 'package:bantuin/UI/penyedia jasa/penyediaJasaProfileEdit.dart';
 import 'package:bantuin/UI/auth/auth_wrapper.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +26,6 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
     _loadUserRoles();
   }
 
-  // Mengambil data peran pengguna dari Firestore untuk menentukan apakah tombol "Beralih" muncul
   Future<void> _loadUserRoles() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -47,20 +46,17 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
     }
   }
 
-  // Fungsi untuk berpindah peran
   Future<void> _switchToRole(String role) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('active_role', role);
 
-    // Navigasi ke AuthWrapper untuk me-restart alur navigasi
-    // dan mengarahkan ke dashboard yang benar tanpa perlu login ulang
+    
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => AuthWrapper()),
       (Route<dynamic> route) => false,
     );
   }
 
-  // --- LOGIKA LOGOUT LENGKAP DENGAN KONFIRMASI ---
   Future<void> _logout(BuildContext context) async {
     final bool? confirmLogout = await showDialog<bool>(
       context: context,
@@ -91,9 +87,8 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
 
     if (confirmLogout == true) {
       await FirebaseAuth.instance.signOut();
-      // Arahkan ke halaman login dan hapus semua halaman sebelumnya dari tumpukan
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()), // Ganti dengan halaman Login Anda
+        MaterialPageRoute(builder: (context) => LoginPage()),
         (Route<dynamic> route) => false,
       );
     }
@@ -104,7 +99,7 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Pengaturan', style: GoogleFonts.poppins()),
-        backgroundColor: const Color(0xFF192F6A), // Sesuaikan dengan tema provider Anda
+        backgroundColor: const Color(0xFF192F6A),
       ),
       backgroundColor: Colors.grey[100],
       body: _isLoading
@@ -127,7 +122,6 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
                 ),
                 Divider(),
 
-                // --- TOMBOL BERALIH PERAN (HANYA MUNCUL JIKA PUNYA 2 PERAN) ---
                 if (_userRoles.length > 1 && _userRoles.contains('customer'))
                   ListTile(
                     leading: Icon(Icons.switch_account_outlined, color: Colors.teal),
@@ -148,7 +142,7 @@ class _ProviderSettingsScreenState extends State<ProviderSettingsScreen> {
     );
   }
 
-  // Helper widget untuk judul seksi
+ 
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),

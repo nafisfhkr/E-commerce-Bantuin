@@ -19,7 +19,7 @@ class _KomunikasiState extends State<Komunikasi> {
   final FirebaseFirestore _chatService = FirebaseFirestore.instance;
   late String chatRoomId;
 
-  // Variables to store receiver data
+
   String receiverName = '';
   String receiverRole = '';
   bool isLoading = true;
@@ -28,11 +28,9 @@ class _KomunikasiState extends State<Komunikasi> {
   void initState() {
     super.initState();
     chatRoomId = generateChatRoomId(currentUser.uid, widget.receiverUserId);
-    // Fetch receiver data when widget initializes
     _fetchReceiverData();
   }
 
-  // Method to fetch receiver user data from Firestore
   void _fetchReceiverData() async {
     try {
       final userData =
@@ -45,16 +43,12 @@ class _KomunikasiState extends State<Komunikasi> {
         setState(() {
           receiverName = userData.data()?['nama'] ?? 'Nama User';
 
-          // Handle the role which appears to be an array in Firestore
           var roleData = userData.data()?['role'];
           if (roleData != null && roleData is List && roleData.isNotEmpty) {
-            // If role is an array, get the first element
             receiverRole = roleData[0].toString();
           } else if (roleData != null && roleData is String) {
-            // If role is a string
             receiverRole = roleData;
           } else {
-            // Default value
             receiverRole = 'Status user';
           }
 
@@ -123,7 +117,7 @@ class _KomunikasiState extends State<Komunikasi> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F1F0), // Light gray background
+      backgroundColor: const Color(0xFFF1F1F0), 
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1F1F0),
         elevation: 0,
@@ -149,7 +143,7 @@ class _KomunikasiState extends State<Komunikasi> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            receiverName, // Dynamic user name
+                            receiverName, 
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -158,7 +152,7 @@ class _KomunikasiState extends State<Komunikasi> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            receiverRole, // Dynamic user role
+                            receiverRole, 
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -181,7 +175,6 @@ class _KomunikasiState extends State<Komunikasi> {
       ),
       body: Column(
         children: [
-          // Separator line
           Container(height: 1, color: const Color.fromARGB(255, 244, 243, 243)),
           Expanded(
             child: Container(
@@ -227,7 +220,6 @@ class _KomunikasiState extends State<Komunikasi> {
               ),
             ),
           ),
-          // Message input area
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -319,7 +311,7 @@ class MessageBubble extends StatelessWidget {
                 color:
                     isMe
                         ? const Color(0xFF1C3879)
-                        : const Color(0xFF1C3879), // Both use same dark blue
+                        : const Color(0xFF1C3879), 
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
