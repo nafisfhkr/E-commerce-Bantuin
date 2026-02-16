@@ -1,16 +1,12 @@
-# bantuin
+# Bantuin
 
-A new Flutter project.
+![banner main](assets/images/readme/bannerMain.svg)
 
-## Getting Started
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
+[![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com)
+[![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)](https://cloud.google.com/maps-platform)
 
-This project is a starting point for a Flutter application.
+**Bantuin** adalah sebuah e-commerce yang menjebatani antara pelanggan/konsumen ke penyedia jasa barang elektronik dan otomotif. 
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![banner bantuin](assets/images/readme/bannerBantuin.svg)
