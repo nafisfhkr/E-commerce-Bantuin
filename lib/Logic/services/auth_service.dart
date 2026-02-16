@@ -193,38 +193,6 @@ class AuthService {
       rethrow;
     }
   }
-  Future<bool> isEmailRegistered(String email) async {
-    final signInMethods = await _auth.fetchSignInMethodsForEmail(email.trim());
-    return signInMethods.isNotEmpty;
-  }
-
-  Future<AuthResult> createAccount(String email, String password, String role) async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
-      
-      final user = userCredential.user!;
-      await user.sendEmailVerification();
-
-      
-      await _firestore.collection('users').doc(user.uid).set({
-        'email': email.trim(),
-        'role': [role],
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      
-      await _createRoleDocument(user.uid, role);
-
-      return AuthResult(status: AuthStatus.success, role: role);
-    } on FirebaseAuthException catch (e) {
-      return AuthResult(status: AuthStatus.error, errorMessage: _handleAuthException(e));
-    } catch (e) {
-      return AuthResult(status: AuthStatus.error, errorMessage: e.toString());
-    }
-  }
 
   Future<AuthResult> loginAndAddRole(String email, String password, String role) async {
     try {

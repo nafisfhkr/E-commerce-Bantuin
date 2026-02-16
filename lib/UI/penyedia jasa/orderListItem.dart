@@ -1,4 +1,3 @@
-// File: lib/penyedia jasa/provider_order_list_item.dart
 
 import 'package:bantuin/UI/chat/komunikasi.dart';
 import 'package:bantuin/UI/penyedia jasa/orderDetail.dart';
@@ -42,7 +41,6 @@ class _ProviderOrderListItemState extends State<ProviderOrderListItem> {
         return;
       }
       
-      // Ambil data pelanggan dan data order secara bersamaan
       final results = await Future.wait([
         FirebaseFirestore.instance.collection('customers').doc(customerId).get(),
         FirebaseFirestore.instance.collection('users').doc(customerId).get(),
@@ -62,9 +60,6 @@ class _ProviderOrderListItemState extends State<ProviderOrderListItem> {
         _customerRating = (customerUserDoc.data() as Map<String, dynamic>?)?['rating'] ?? 0.0;
       }
       
-      // --- PERBAIKAN LOGIKA LOKASI ---
-      // Prioritaskan 'orderAddress' dari dokumen pesanan.
-      // Jika tidak ada, baru gunakan alamat dari profil pelanggan sebagai cadangan.
       setState(() {
         _locationDisplay = orderData['orderAddress'] ?? customerProfileAddress;
       });
@@ -97,7 +92,7 @@ class _ProviderOrderListItemState extends State<ProviderOrderListItem> {
     if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
       Position currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
       
-      // --- TAMBAHAN DEBUGGING: Print koordinat ke console ---
+    
       print('--- KOORDINAT UNTUK PERHITUNGAN JARAK ---');
       print('Lokasi Provider (Anda): Lat=${currentPosition.latitude}, Lng=${currentPosition.longitude}');
       print('Lokasi Pelanggan: Lat=${customerGeoPoint.latitude}, Lng=${customerGeoPoint.longitude}');
@@ -339,7 +334,7 @@ class _ProviderOrderListItemState extends State<ProviderOrderListItem> {
                             color: Colors.grey[700],
                           ),
                         ),
-                        // --- PERBAIKAN: Menampilkan lokasi yang benar ---
+                      
                         if (_locationDisplay.isNotEmpty)
                           const SizedBox(height: 4),
                         if (_locationDisplay.isNotEmpty)

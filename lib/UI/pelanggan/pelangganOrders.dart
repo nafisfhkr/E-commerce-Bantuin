@@ -25,7 +25,6 @@ class _CustomerOrderHistoryScreenState extends State<CustomerOrderHistoryScreen>
     _currentUser = FirebaseAuth.instance.currentUser;
   }
 
-  // --- LOGIKA HELPER ASLI (TIDAK BERUBAH) ---
 
   String _formatTimestampToDate(Timestamp? timestamp) {
     if (timestamp == null) return 'Tanggal tidak tersedia';
@@ -72,15 +71,12 @@ class _CustomerOrderHistoryScreenState extends State<CustomerOrderHistoryScreen>
     return 'assets/images/elektronik/layanan/lain-lain.png';
   }
 
-  // --- BUILDER UTAMA MENGGUNAKAN SERVICE ---
-
   Widget _buildOrdersList() {
     if (_currentUser == null) {
       return Center(child: Text("Silakan login untuk melihat riwayat.", style: GoogleFonts.poppins()));
     }
 
     return StreamBuilder<QuerySnapshot>(
-      // Memanggil stream dari CustomerService
       stream: _service.getOrderHistoryStream(_currentUser!.uid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -111,7 +107,6 @@ class _CustomerOrderHistoryScreenState extends State<CustomerOrderHistoryScreen>
             Timestamp? createdAt = orderData['createdAt'] as Timestamp?;
             Map<String, dynamic> details = orderData['details'] as Map<String, dynamic>? ?? {};
 
-            // --- Logika Kategori & Tipe ---
             String serviceType = details['service'] as String? ?? '';
             String displayedCategory = details['type'] ?? details['vehicleType'] ?? details['electronicType'] ?? 'Lain-lain';
             String displayedType = details['categoryType'] ?? details['vehicleModel'] ?? details['electronicModel'] ?? '';

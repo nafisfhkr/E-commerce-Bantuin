@@ -22,7 +22,6 @@ class _VerifikasiEmailPageState extends State<VerifikasiEmailPage> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi Service
     _authService = AuthService(
       FirebaseAuth.instance,
       FirebaseFirestore.instance,

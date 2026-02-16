@@ -13,16 +13,14 @@ class NotificationProviderScreen extends StatelessWidget {
   String _timeAgo(DateTime dateTime) {
    
     final nowUtc = DateTime.now().toUtc();
-    final dateTimeUtc = dateTime.toUtc(); // Pastikan dateTime juga dikonversi ke UTC jika belum
-
-    // Tambahkan offset WIB ke waktu sekarang jika dateTime dari server adalah UTC
-    // Jika dateTime dari server sudah dalam WIB (misalnya disimpan dengan offset), maka baris ini tidak perlu.
-    // final nowInWIB = nowUtc.add(const Duration(hours: 7));
+    final dateTimeUtc = dateTime.toUtc(); 
 
     
 
-    final now = DateTime.now(); // Waktu lokal perangkat
-    final difference = now.difference(dateTime); // dateTime diasumsikan sudah dalam zona waktu yang benar atau dikonversi
+    
+
+    final now = DateTime.now(); 
+    final difference = now.difference(dateTime); 
 
     if (difference.inSeconds < 60) return 'Baru saja';
     if (difference.inMinutes < 60) return '${difference.inMinutes} menit yang lalu';
@@ -34,19 +32,15 @@ class NotificationProviderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final screenWidth = MediaQuery.of(context).size.width; // Tidak terlalu diperlukan jika Card sudah di-center
-
-    // Sebaiknya, jika ini adalah dialog, Scaffold bisa dihilangkan dan langsung return Dialog
-    // Namun, karena ada WillPopScope, kita pertahankan strukturnya
-    // dan pastikan Scaffold memiliki background transparan agar Card terlihat sebagai dialog.
+    
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.4), // Latar belakang semi-transparan untuk efek dialog
+        backgroundColor: Colors.black.withOpacity(0.4), 
         body: SafeArea(
           child: Center(
-            child: SingleChildScrollView( // Untuk menghindari overflow jika konten terlalu panjang
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), // Padding luar untuk Card
+            child: SingleChildScrollView( 
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), 
               child: FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance.collection('orders').doc(orderId).get(),
                 builder: (context, orderSnapshot) {
@@ -63,7 +57,7 @@ class NotificationProviderScreen extends StatelessWidget {
                   var order = orderSnapshot.data!.data() as Map<String, dynamic>? ?? {};
                   var details = order['details'] as Map<String, dynamic>? ?? {}; 
                   String customerId = order['customerId'] ?? '';
-                  String serviceType = details['service'] ?? order['service'] ?? 'Layanan Tidak Diketahui'; // Ambil dari order jika tidak ada di details
+                  String serviceType = details['service'] ?? order['service'] ?? 'Layanan Tidak Diketahui';
                   DateTime createdAt = (order['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
                   String timeAgo = _timeAgo(createdAt);
 
@@ -75,11 +69,10 @@ class NotificationProviderScreen extends StatelessWidget {
                     future: FirebaseFirestore.instance.collection('customers').doc(customerId).get(),
                     builder: (context, customerSnapshot) {
                       if (customerSnapshot.connectionState == ConnectionState.waiting && !customerSnapshot.hasData) {
-                         // Tampilkan card dengan loading state untuk info customer
                         return _buildNotificationCardContent(
                           context: context,
                           customerName: "Memuat nama...",
-                          customerPhotoUrl: null, // Atau URL placeholder jika ada
+                          customerPhotoUrl: null, 
                           isLoadingCustomer: true,
                           serviceType: serviceType,
                           timeAgo: timeAgo,
@@ -94,21 +87,19 @@ class NotificationProviderScreen extends StatelessWidget {
                       if (customerSnapshot.hasData && customerSnapshot.data!.exists) {
                         var customerData = customerSnapshot.data!.data() as Map<String, dynamic>;
                         customerName = customerData['nama'] ?? 'Pelanggan Yth.';
-                        customerPhotoUrl = customerData['photoUrl'] as String?; // Ambil URL foto jika ada
+                        customerPhotoUrl = customerData['photoUrl'] as String?;
                       } else if (customerSnapshot.hasError) {
                         customerName = 'Gagal memuat nama';
                       }
 
 
-                      // --- Fungsionalitas Tombol Tetap Sama ---
                       VoidCallback acceptOrder = () {
                         FirebaseFirestore.instance.collection('orders').doc(orderId).update({
                           'status': 'accepted',
                           'providerId': FirebaseAuth.instance.currentUser?.uid,
                         });
-                        Navigator.pop(context); // Tutup dialog
-                        // Navigasi ke halaman manajemen order provider jika ada
-                        // Navigator.pushReplacementNamed(context, '/order_management_provider');
+                        Navigator.pop(context); 
+                       
                          try {
                             Navigator.pushReplacementNamed(context, '/order_management');
                          } catch (e) {
@@ -125,7 +116,6 @@ class NotificationProviderScreen extends StatelessWidget {
                         });
                         Navigator.pop(context); 
                       };
-                      // --- Akhir Fungsionalitas Tombol ---
 
                       return _buildNotificationCardContent(
                         context: context,
@@ -192,18 +182,17 @@ class NotificationProviderScreen extends StatelessWidget {
     required VoidCallback onReject,
   }) {
     return Card(
-      elevation: 8.0, // Beri sedikit shadow
+      elevation: 8.0,
       shadowColor: Colors.black.withOpacity(0.2),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Sudut lebih bulat
+        borderRadius: BorderRadius.circular(20.0), 
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Agar card menyesuaikan konten
-          crossAxisAlignment: CrossAxisAlignment.stretch, // Agar tombol memenuhi lebar
+          mainAxisSize: MainAxisSize.min, 
+          crossAxisAlignment: CrossAxisAlignment.stretch, 
           children: [
-            // Header: Avatar dan Nama Customer
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -228,8 +217,8 @@ class NotificationProviderScreen extends StatelessWidget {
                         Text(
                           customerName,
                           style: GoogleFonts.poppins(
-                            fontSize: 18, // Sedikit lebih besar
-                            fontWeight: FontWeight.w600, // Bold
+                            fontSize: 18, 
+                            fontWeight: FontWeight.w600, 
                             color: Color(0xFF1A1A1A),
                           ),
                           maxLines: 1,
@@ -237,37 +226,37 @@ class NotificationProviderScreen extends StatelessWidget {
                         ),
                       const SizedBox(height: 2),
                       Text(
-                        'Mencari teknisi di dekat Anda', // Pesan disesuaikan
+                        'Mencari teknisi di dekat Anda', 
                         style: GoogleFonts.poppins(
-                          fontSize: 14, // Ukuran standar
+                          fontSize: 14, 
                           fontWeight: FontWeight.normal,
-                          color: Colors.black54, // Warna lebih lembut
+                          color: Colors.black54, 
                         ),
                       ),
                     ],
                   ),
                 ),
-                Text( // Waktu
+                Text( 
                   timeAgo,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.grey.shade600, // Warna lembut
+                    color: Colors.grey.shade600, 
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20), // Spasi antar bagian
+            const SizedBox(height: 20), 
 
-            // Detail Pesanan
+            
             Container(
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: Colors.blueGrey.shade50, // Warna latar yang lembut untuk detail
+                color: Colors.blueGrey.shade50, 
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.build_circle_outlined, color: Theme.of(context).primaryColor, size: 22), // Ikon yang relevan
+                  Icon(Icons.build_circle_outlined, color: Theme.of(context).primaryColor, size: 22), 
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -282,16 +271,16 @@ class NotificationProviderScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24), // Spasi sebelum tombol
+            const SizedBox(height: 24),
 
-            // Tombol Aksi
+           
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: onReject, // Fungsionalitas tidak berubah
+                    onPressed: onReject,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300, // Warna tombol tolak
+                      backgroundColor: Colors.grey.shade300, 
                       foregroundColor: Colors.black87,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -311,12 +300,11 @@ class NotificationProviderScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: onAccept, // Fungsionalitas tidak berubah
+                    onPressed: onAccept, 
                     style: ElevatedButton.styleFrom(
-                      // Gunakan warna tema utama aplikasi Anda jika ada, atau warna yang lebih menonjol
-                      backgroundColor: Theme.of(context).primaryColorDark, // Contoh: Color(0xFF192655)
+                      backgroundColor: Theme.of(context).primaryColorDark, 
                       foregroundColor: Colors.white,
-                      elevation: 2, // Sedikit elevasi untuk tombol utama
+                      elevation: 2,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

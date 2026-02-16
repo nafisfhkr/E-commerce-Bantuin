@@ -17,7 +17,7 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
   ServiceCategory _selectedCategory = ServiceCategory.kendaraan;
   bool _isLoading = true;
 
-  // State awal (default) untuk semua layanan
+  
   Map<String, bool> _vehicleTypes = {'Mobil': false, 'Motor': false};
   Map<String, bool> _electronicTypes = {'Rumah Tangga': false, 'Kantor': false};
 
@@ -102,7 +102,6 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
           );
       }
     } finally {
-      // Sembunyikan loading indicator setelah semua proses selesai
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -214,7 +213,7 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
           children: [
             _buildTypeCard(
               label: 'Mobil',
-              imagePath: 'assets/images/vehicles/mobil/sport.png', // Sesuaikan path jika perlu
+              imagePath: 'assets/images/vehicles/mobil/sport.png', 
               isSelected: _vehicleTypes['Mobil'] ?? false,
               onTap: () {
                 setState(() { _vehicleTypes['Mobil'] = !(_vehicleTypes['Mobil'] ?? false); });
@@ -224,7 +223,7 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
             const SizedBox(width: 16),
             _buildTypeCard(
               label: 'Motor',
-              imagePath: 'assets/images/vestic.png', // Sesuaikan path jika perlu
+              imagePath: 'assets/images/vestic.png', 
               isSelected: _vehicleTypes['Motor'] ?? false,
               onTap: () {
                 setState(() { _vehicleTypes['Motor'] = !(_vehicleTypes['Motor'] ?? false); });
@@ -260,7 +259,7 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
           children: [
             _buildTypeCard(
               label: 'Rumah Tangga',
-              imagePath: 'assets/images/elektronik/rumah tangga.png', // Sesuaikan path jika perlu
+              imagePath: 'assets/images/elektronik/rumah tangga.png', 
               isSelected: _electronicTypes['Rumah Tangga'] ?? false,
               onTap: () {
                 setState(() { _electronicTypes['Rumah Tangga'] = !(_electronicTypes['Rumah Tangga'] ?? false); });
@@ -270,7 +269,7 @@ class _ManajemenLayananPageState extends State<ManajemenLayananPage> {
             const SizedBox(width: 16),
             _buildTypeCard(
               label: 'Kantor',
-              imagePath: 'assets/images/elektronik/kantor.png', // Sesuaikan path jika perlu
+              imagePath: 'assets/images/elektronik/kantor.png', 
               isSelected: _electronicTypes['Kantor'] ?? false,
               onTap: () {
                 setState(() { _electronicTypes['Kantor'] = !(_electronicTypes['Kantor'] ?? false); });

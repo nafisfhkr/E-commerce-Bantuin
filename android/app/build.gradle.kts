@@ -1,7 +1,17 @@
+import java.util.Properties
+
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { 
+        localProperties.load(it) 
+    }
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
@@ -9,12 +19,12 @@ plugins {
 android {
     namespace = "com.jkw.bantuin"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" // ← Wajib untuk Firebase SDK terbaru
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true // Aktifkan desugaring
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -23,35 +33,29 @@ android {
 
     defaultConfig {
         applicationId = "com.jkw.bantuin"
-        minSdk = 23 // ← Tetap 23 sesuai kebutuhan Anda
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
+        
+        manifestPlaceholders["mapsApiKey"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
-
 
 flutter {
     source = "../.."
 }
 
 dependencies {
-    // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-
-    // Firebase libraries
     implementation("com.google.firebase:firebase-analytics")
-
-    // MultiDex support
     implementation("androidx.multidex:multidex:2.0.1")
-
-    // Tambahkan dependensi desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

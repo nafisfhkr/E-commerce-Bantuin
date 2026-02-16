@@ -1,5 +1,4 @@
-// File: notification_customer_screen.dart (milik Customer)
-// (Kode ini adalah yang Anda berikan sebelumnya)
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -13,16 +12,15 @@ class NotificationCustomerScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        // backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Latar belakang Scaffold bisa transparan jika Anda mau efek card melayang
-        backgroundColor: Colors.black.withOpacity(0.5), // Contoh: Latar belakang semi-transparan untuk dialog
+        backgroundColor: Colors.black.withOpacity(0.5), 
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Center(
-              child: Container( // Ini adalah 'card' yang Anda maksud
+              child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.black, // Warna card Anda
+                  color: Colors.black, 
                   borderRadius: BorderRadius.circular(24.0),
                   border: Border.all(color: Colors.white, width: 2.0),
                 ),
@@ -64,8 +62,6 @@ class NotificationCustomerScreen extends StatelessWidget {
                     String estimatedPrice = details['estimatedPriceMin']?.toString() ?? order['estimatedPriceMin']?.toString() ?? 'N/A';
 
                     if (providerId.isEmpty) {
-                       // Seharusnya tidak terjadi jika notifikasi ini dipicu oleh status 'accepted'
-                       // Tapi sebagai fallback:
                         return Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
@@ -99,9 +95,7 @@ class NotificationCustomerScreen extends StatelessWidget {
                            providerName = providerData['nama'] ?? 'Teknisi';
                         }
 
-                        // PASTE KODE UI NotificationCustomerScreen Anda dari FutureBuilder<DocumentSnapshot> providerSnapshot
-                        // Mulai dari return Padding( padding: const EdgeInsets.all(16.0), child: Column(...
-                        // Sesuai dengan yang Anda berikan (saya akan menyederhanakan sedikit untuk contoh)
+                      
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -113,8 +107,7 @@ class NotificationCustomerScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(children: [
-                                    // Icon Layanan (ganti dengan path yang benar)
-                                    // Container(width: 28, height: 28, child: Image(image: AssetImage('assets/images/oli.png'), width: 16, height: 16, color: Colors.white,)),
+                                   
                                     Icon(Icons.build_circle_outlined, color: Colors.white, size: 28),
                                     SizedBox(width: 8),
                                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -128,10 +121,9 @@ class NotificationCustomerScreen extends StatelessWidget {
                                 ],
                               ),
                               SizedBox(height: 25),
-                              // Info Provider
+                             
                               Row(
                                 children: [
-                                  // CircleAvatar(backgroundImage: AssetImage('assets/images/profile.png')), // Ganti path
                                   Icon(Icons.person_pin_circle_outlined, color: Colors.blueAccent, size: 40),
                                   SizedBox(width: 12),
                                   Expanded(
@@ -143,7 +135,6 @@ class NotificationCustomerScreen extends StatelessWidget {
                                 ],
                               ),
                               SizedBox(height: 25),
-                              // Tombol Aksi
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
@@ -157,7 +148,6 @@ class NotificationCustomerScreen extends StatelessWidget {
                                   IconButton(
                                     icon: Icon(Icons.call_outlined, color: Colors.white, size: 28),
                                     onPressed: () {
-                                      // Logika untuk menelepon provider
                                     },
                                   ),
                                 ],

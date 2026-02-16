@@ -163,7 +163,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   Widget _buildServiceCard(String title, String imagePath, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const VehicleServicePage() : const ElectronicServicePage()));  // sementara karena belum tak migrasi yang folder orders (harus e order)
+        Navigator.push(context, MaterialPageRoute(builder: (context) => title == 'Kendaraan' ? const VehicleServicePage() : const ElectronicServicePage()));  
       },
       child: Column(children: [
         Container(

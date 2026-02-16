@@ -11,7 +11,6 @@ class NotificationPage extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            // Back button and title
             Padding(
               padding: const EdgeInsets.only(
                 left: 20.0,
@@ -43,7 +42,6 @@ class NotificationPage extends StatelessWidget {
               ),
             ),
 
-            // Section: 7 Hari Terakhir
             const Padding(
               padding: EdgeInsets.only(left: 20.0, bottom: 10.0),
               child: Text(
@@ -72,7 +70,6 @@ class NotificationPage extends StatelessWidget {
               ),
             ),
 
-            // Notifications for last month
             _buildNotificationItem(),
           ],
         ),
@@ -87,11 +84,10 @@ class NotificationPage extends StatelessWidget {
       decoration: const BoxDecoration(color: Colors.white),
       child: Row(
         children: [
-          // Profile picture - circular with border radius
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
-              'assets/images/bintang.JPG', // You'll need to replace this with your actual image
+              'assets/images/bintang.JPG', 
               width: 40,
               height: 40,
               fit: BoxFit.cover,
@@ -106,7 +102,7 @@ class NotificationPage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10.0),
-          // Notification content
+  
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

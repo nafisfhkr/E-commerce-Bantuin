@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart'; 
+import 'package:flutter_polyline_points/flutter_polyline_points.dart'; 
+import 'package:http/http.dart' as http; 
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:bantuin/Logic/config.dart'; 
 
 class PetaGelap extends StatefulWidget {
   final String orderId;
@@ -16,13 +19,60 @@ class PetaGelap extends StatefulWidget {
 }
 
 class _PetaGelapState extends State<PetaGelap> {
+  GoogleMapController? _mapController;
   bool _isActionInProgress = false;
+  
+
+  Map<MarkerId, Marker> _markers = {};
+  Set<Polyline> _polylines = {};
+  List<LatLng> _polylineCoordinates = [];
+  PolylinePoints _polylinePoints = PolylinePoints();
+
+ 
+  final String _darkMapStyle = '''[
+    {"elementType": "geometry", "stylers": [{"color": "#212121"}]},
+    {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+    {"elementType": "labels.text.fill", "stylers": [{"color": "#757575"}]},
+    {"elementType": "labels.text.stroke", "stylers": [{"color": "#212121"}]},
+    {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#757575"}]},
+    {"featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#181818"}]},
+    {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#2c2c2c"}]},
+    {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#000000"}]}
+  ]''';
 
   @override
   void initState() {
     super.initState();
-    
     _startLocationUpdates();
+  }
+
+  Future<void> _getPolyline(LatLng start, LatLng end) async {
+    _polylines.clear();
+    _polylineCoordinates.clear();
+
+    PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
+      googleApiKey: MAPS_API_KEY,
+      request: PolylineRequest(
+        origin: PointLatLng(start.latitude, start.longitude),
+        destination: PointLatLng(end.latitude, end.longitude),
+        mode: TravelMode.driving,
+      ),
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        _polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+
+      setState(() {
+        _polylines.add(Polyline(
+          polylineId: const PolylineId("route"),
+          points: _polylineCoordinates,
+          color: Colors.blueAccent,
+          width: 5,
+        ));
+      });
+    }
   }
 
   Future<void> _startLocationUpdates() async {
@@ -85,29 +135,50 @@ class _PetaGelapState extends State<PetaGelap> {
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance.collection('orders').doc(widget.orderId).snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           
           var orderData = snapshot.data!.data() as Map<String, dynamic>;
-          GeoPoint? customerLocation = orderData['customerLocation'];
-          if (customerLocation == null) return const Center(child: Text('Lokasi customer tidak ditemukan'));
-          
-          GeoPoint? providerLocation = orderData['providerLocation'];
-          LatLng customerLatLng = LatLng(customerLocation.latitude, customerLocation.longitude);
-          LatLng? providerLatLng = providerLocation != null ? LatLng(providerLocation.latitude, providerLocation.longitude) : null;
-          
+          GeoPoint? custLoc = orderData['customerLocation'];
+          GeoPoint? provLoc = orderData['providerLocation'];
+
+          if (custLoc == null) return const Center(child: Text('Lokasi tidak ditemukan'));
+
+          LatLng customerLatLng = LatLng(custLoc.latitude, custLoc.longitude);
+          LatLng? providerLatLng = provLoc != null ? LatLng(provLoc.latitude, provLoc.longitude) : null;
+
+          if (providerLatLng != null && _polylineCoordinates.isEmpty) {
+            _getPolyline(providerLatLng, customerLatLng);
+          }
+
           return Stack(
             children: [
-              FlutterMap(
-                options: MapOptions(initialCenter: customerLatLng, initialZoom: 14.0),
-                children: [
-                  TileLayer(urlTemplate: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", subdomains: const ['a', 'b', 'c', 'd']),
-                  MarkerLayer(markers: [
-                    Marker(point: customerLatLng, child: Icon(Icons.location_on, color: Colors.blueAccent, size: 40)),
-                    if (providerLatLng != null) Marker(point: providerLatLng, child: Icon(Icons.directions_car, color: Colors.yellowAccent, size: 40)),
-                  ]),
-                  if (providerLatLng != null) PolylineLayer(polylines: [ Polyline(points: [customerLatLng, providerLatLng], color: Colors.lightBlue, strokeWidth: 4.0)]),
-                ],
+              GoogleMap(
+                initialCameraPosition: CameraPosition(target: customerLatLng, zoom: 15),
+                onMapCreated: (controller) {
+                  _mapController = controller;
+                  _mapController!.setMapStyle(_darkMapStyle); 
+                },
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('customer'),
+                    position: customerLatLng,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+                    infoWindow: const InfoWindow(title: 'Lokasi Anda'),
+                  ),
+                  if (providerLatLng != null)
+                    Marker(
+                      markerId: const MarkerId('provider'),
+                      position: providerLatLng,
+                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+                      infoWindow: const InfoWindow(title: 'Teknisi'),
+                    ),
+                },
+                polylines: _polylines,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
               ),
+
+            
               Positioned(
                 top: 40, left: 16,
                 child: SafeArea(
@@ -120,6 +191,7 @@ class _PetaGelapState extends State<PetaGelap> {
                   ),
                 ),
               ),
+
               DraggableScrollableSheet(
                 initialChildSize: 0.35, minChildSize: 0.15, maxChildSize: 0.6,
                 builder: (BuildContext context, ScrollController scrollController) {
@@ -152,10 +224,10 @@ class _PetaGelapState extends State<PetaGelap> {
       ),
     );
   }
-  
+
   Widget _buildDynamicBottomContent(Map<String, dynamic> orderData) {
-     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return SizedBox.shrink();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const SizedBox.shrink();
 
     final status = orderData['status'] ?? 'pending';
     final paymentStatus = orderData['paymentStatus'] ?? 'unpaid';
@@ -164,7 +236,6 @@ class _PetaGelapState extends State<PetaGelap> {
     final isCustomer = user.uid == orderData['customerId'];
     final isProvider = user.uid == orderData['providerId'];
 
-    // PERBAIKAN LOGIKA: Provider juga bisa melihat info tracking saat pekerjaan berlangsung
     if (status == 'pending' || status == 'accepted' || status == 'processing') {
       return _buildProviderEnRouteWidget(isCustomer, providerId, orderData);
     }
@@ -180,21 +251,23 @@ class _PetaGelapState extends State<PetaGelap> {
       child: Text("Status Pesanan: ${_capitalizeFirstLetter(status)}"),
     ));
   }
-  
+
   Widget _buildProviderEnRouteWidget(bool isCustomer, String? providerId, Map<String, dynamic> orderData) {
-     if (providerId == null) {
+    if (providerId == null) {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: [
           Text("Mencari Teknisi...", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 20), CircularProgressIndicator(),
+          const SizedBox(height: 20), 
+          const CircularProgressIndicator(),
         ]),
       );
     }
-     return FutureBuilder<DocumentSnapshot>(
+    
+    return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance.collection('users').doc(providerId).get(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         var providerData = snapshot.data!.data() as Map<String, dynamic>;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -205,14 +278,14 @@ class _PetaGelapState extends State<PetaGelap> {
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ListTile(
                 leading: CircleAvatar(radius: 25, backgroundImage: NetworkImage(providerData['photo_url'] ?? '')),
                 title: Text(providerData['nama'] ?? 'Teknisi', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                subtitle: Text("Rating: 4.5 ★"),
+                subtitle: const Text("Rating: 4.5 ★"),
                 trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                  IconButton(icon: Icon(Icons.chat), onPressed: () => Navigator.pushNamed(context, '/chat', arguments: {'receiverUserId': isCustomer ? providerId : orderData['customerId']})),
-                  IconButton(icon: Icon(Icons.call), onPressed: () {}),
+                  IconButton(icon: const Icon(Icons.chat), onPressed: () => Navigator.pushNamed(context, '/chat', arguments: {'receiverUserId': isCustomer ? providerId : orderData['customerId']})),
+                  IconButton(icon: const Icon(Icons.call), onPressed: () {}),
                 ]),
               )
             ],
@@ -223,61 +296,95 @@ class _PetaGelapState extends State<PetaGelap> {
   }
 
   Widget _buildPaymentFlowWidget(bool isCustomer, bool isProvider, String paymentStatus, num? finalAmount, Map<String, dynamic> orderData) {
-    if (_isActionInProgress) return Center(child: Padding(padding: const EdgeInsets.all(16.0), child: CircularProgressIndicator()));
+    if (_isActionInProgress) return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator()));
 
     if (isCustomer) {
-      if (finalAmount == null) return Padding(padding: const EdgeInsets.all(16.0), child: Text("Pekerjaan telah selesai. Menunggu teknisi menetapkan harga akhir...", textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800)));
+      if (finalAmount == null) return Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: Text("Pekerjaan telah selesai. Menunggu teknisi menetapkan harga akhir...", 
+          textAlign: TextAlign.center, 
+          style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800)
+        )
+      );
       if (paymentStatus == 'unpaid') {
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(children: [
             Text("Total Tagihan Anda", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text("Rp ${NumberFormat.decimalPattern('id_ID').format(finalAmount)}", style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColorDark)),
-            SizedBox(height: 20),
+            const SizedBox(height: 8),
+            Text("Rp ${NumberFormat.decimalPattern('id_ID').format(finalAmount)}", 
+              style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColorDark)
+            ),
+            const SizedBox(height: 20),
             ElevatedButton.icon(
-              icon: Icon(Icons.payment),
-              label: Text("Bayar Sekarang"),
+              icon: const Icon(Icons.payment),
+              label: const Text("Bayar Sekarang"),
               onPressed: () => _customerPay(finalAmount, orderData['providerId'], orderData['customerId']),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, minimumSize: Size(double.infinity, 50)),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
             ),
           ]),
         );
       }
-      if (paymentStatus == 'paid') return Padding(padding: const EdgeInsets.all(16.0), child: Text("Menunggu konfirmasi pembayaran dari teknisi...", style: GoogleFonts.poppins(color: Colors.blue, fontSize: 16)));
-      if (paymentStatus == 'confirmed') return Padding(padding: const EdgeInsets.all(16.0), child: Text("Pembayaran Lunas & Terkonfirmasi!", style: GoogleFonts.poppins(color: Colors.green, fontWeight: FontWeight.w600, fontSize: 16)));
+      if (paymentStatus == 'paid') return Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: Text("Menunggu konfirmasi pembayaran dari teknisi...", 
+          style: GoogleFonts.poppins(color: Colors.blue, fontSize: 16)
+        )
+      );
+      if (paymentStatus == 'confirmed') return Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: Text("Pembayaran Lunas & Terkonfirmasi!", 
+          style: GoogleFonts.poppins(color: Colors.green, fontWeight: FontWeight.w600, fontSize: 16)
+        )
+      );
     }
     
     if (isProvider) {
-      if (finalAmount == null) return Padding(padding: const EdgeInsets.all(16.0), child: Text("Pekerjaan selesai. Silakan tetapkan harga akhir di halaman detail pesanan.", textAlign: TextAlign.center, style: GoogleFonts.poppins(color: Colors.orange.shade800)));
-      if (paymentStatus == 'unpaid') return Padding(padding: const EdgeInsets.all(16.0), child: Text("Menunggu pembayaran dari pelanggan...", style: GoogleFonts.poppins(color: Colors.orange.shade800)));
+      if (finalAmount == null) return Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: Text("Pekerjaan selesai. Silakan tetapkan harga akhir di halaman detail pesanan.", 
+          textAlign: TextAlign.center, 
+          style: GoogleFonts.poppins(color: Colors.orange.shade800)
+        )
+      );
+      if (paymentStatus == 'unpaid') return Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: Text("Menunggu pembayaran dari pelanggan...", 
+          style: GoogleFonts.poppins(color: Colors.orange.shade800)
+        )
+      );
       if (paymentStatus == 'paid') {
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton.icon(
-            icon: Icon(Icons.check_circle_outline),
-            label: Text("Konfirmasi Pembayaran"),
+            icon: const Icon(Icons.check_circle_outline),
+            label: const Text("Konfirmasi Pembayaran"),
             onPressed: _providerConfirmPaymentAndCompleteOrder,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade800, foregroundColor: Colors.white, minimumSize: Size.fromHeight(50)),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade800, foregroundColor: Colors.white, minimumSize: const Size.fromHeight(50)),
           ),
         );
       }
     }
     
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildCompletedWidget(bool isCustomer, String? providerId) {
-     return Padding(
-       padding: const EdgeInsets.all(16.0),
-       child: Column(children: [
-         Icon(Icons.check_circle, color: Colors.green, size: 60),
-         SizedBox(height: 12),
-         Text("Pesanan Selesai!", style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green.shade800)),
-         SizedBox(height: 20),
-         if (isCustomer && providerId != null)
-           ElevatedButton(onPressed: () => Navigator.pushNamed(context, '/review', arguments: {'orderId': widget.orderId, 'providerId': providerId}), child: Text("Beri Ulasan")),
-       ]),
-     );
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(children: [
+        const Icon(Icons.check_circle, color: Colors.green, size: 60),
+        const SizedBox(height: 12),
+        Text("Pesanan Selesai!", 
+          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green.shade800)
+        ),
+        const SizedBox(height: 20),
+        if (isCustomer && providerId != null)
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/review', arguments: {'orderId': widget.orderId, 'providerId': providerId}), 
+            child: const Text("Beri Ulasan")
+          ),
+      ]),
+    );
   }
 }

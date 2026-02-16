@@ -9,7 +9,6 @@ class UpdateStatusPerbaikan extends StatefulWidget {
 }
 
 class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
-  // Status items with their completion state
   final List<RepairStatusItem> statusItems = [
     RepairStatusItem(
       title: "Pesanan diterima",
@@ -65,12 +64,10 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Customer Info Card
               _buildCustomerInfoCard(),
               
               const SizedBox(height: 20),
               
-              // Status Perbaikan Section
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -90,15 +87,12 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
                     ),
                     const SizedBox(height: 16),
                     
-                    // Timeline of status updates
                     _buildStatusTimeline(),
                     
                     const SizedBox(height: 16),
-                    
-                    // Add Status Button
+ 
                     InkWell(
                       onTap: () {
-                        // Add status logic here
                       },
                       child: Container(
                         width: double.infinity,
@@ -133,7 +127,6 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
     );
   }
 
-  // Customer info card widget
   Widget _buildCustomerInfoCard() {
     return Container(
       width: double.infinity,
@@ -178,7 +171,7 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
     );
   }
 
-  // Status timeline widget
+
   Widget _buildStatusTimeline() {
     return ListView.builder(
       shrinkWrap: true,
@@ -192,7 +185,6 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Timeline indicators column
               Column(
                 children: [
                   _buildStatusIndicator(item.isCompleted),
@@ -206,7 +198,6 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
                 ],
               ),
               const SizedBox(width: 16),
-              // Status content
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(bottom: isLast ? 0 : 20),
@@ -287,7 +278,6 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
     );
   }
 
-  // Status indicator (check circle)
   Widget _buildStatusIndicator(bool isCompleted) {
     return Container(
       width: 24.0,
@@ -309,7 +299,6 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
     );
   }
 
-  // Image placeholder for repair photos
   Widget _buildImagePlaceholder() {
     return Container(
       width: 60,
@@ -321,13 +310,11 @@ class _UpdateStatusPerbaikanState extends State<UpdateStatusPerbaikan> {
     );
   }
 
-  // Format date to display in the UI
   String _formatDate(DateTime date) {
     return '• ${DateFormat('d MMM yyyy, HH:mm').format(date)}';
   }
 }
 
-// Model class for repair status items
 class RepairStatusItem {
   final String title;
   final String description;
