@@ -122,9 +122,9 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Izin lokasi ditolak')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Izin lokasi ditolak')));
         return;
       }
     }
@@ -211,27 +211,29 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
         'itemImageUrl': imagePath,
       };
 
-      DocumentReference orderRef = await FirebaseFirestore.instance.collection('orders').add({
-        'customerId': user.uid,
-        'providerId': null,
-        'orderType': 'electronic',
-        'details': details,
-        'description': description,
-        'orderAddress': lokasiController.text.trim(),
-        'customerLocation': GeoPoint(
-          _currentPosition!.latitude,
-          _currentPosition!.longitude,
-        ),
-        'providerLocation': null,
-        'status': 'pending',
-        'createdAt': FieldValue.serverTimestamp(),
-        'distance': null,
-      });
+      DocumentReference orderRef = await FirebaseFirestore.instance
+          .collection('orders')
+          .add({
+            'customerId': user.uid,
+            'providerId': null,
+            'orderType': 'electronic',
+            'details': details,
+            'description': description,
+            'orderAddress': lokasiController.text.trim(),
+            'customerLocation': GeoPoint(
+              _currentPosition!.latitude,
+              _currentPosition!.longitude,
+            ),
+            'providerLocation': null,
+            'status': 'pending',
+            'createdAt': FieldValue.serverTimestamp(),
+            'distance': null,
+          });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pesanan berhasil dibuat')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Pesanan berhasil dibuat')));
 
       Navigator.pushNamed(
         context,
@@ -240,9 +242,9 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal membuat pesanan: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal membuat pesanan: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -266,7 +268,9 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
   @override
   Widget build(BuildContext context) {
     final currentSubCategories =
-        mainElectronicCategories[selectedElectronicType]?['subcategories'] as Map<String, dynamic>? ?? {};
+        mainElectronicCategories[selectedElectronicType]?['subcategories']
+            as Map<String, dynamic>? ??
+        {};
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F1F0),
@@ -329,6 +333,35 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
                   'Jelaskan Kendala',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Tips: Sebutkan tipe error, gejala (mati total/bocor), dan lama kerusakan agar diagnosa AI lebih presisi.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 8),
                 SizedBox(
                   height: 50,
@@ -367,12 +400,18 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: mainElectronicCategories.keys.length,
                     itemBuilder: (context, index) {
-                      String key = mainElectronicCategories.keys.elementAt(index);
-                      Map<String, dynamic> typeData = mainElectronicCategories[key]!;
+                      String key = mainElectronicCategories.keys.elementAt(
+                        index,
+                      );
+                      Map<String, dynamic> typeData =
+                          mainElectronicCategories[key]!;
                       return Container(
                         width: 140,
                         margin: EdgeInsets.only(
-                          right: index == mainElectronicCategories.keys.length - 1 ? 0 : 12,
+                          right:
+                              index == mainElectronicCategories.keys.length - 1
+                                  ? 0
+                                  : 12,
                         ),
                         child: _buildElectronicTypeOption(
                           typeData['label']!,
@@ -407,7 +446,10 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
                       return Container(
                         width: 80,
                         margin: EdgeInsets.only(
-                          right: index == electronicServices.keys.length - 1 ? 0 : 12,
+                          right:
+                              index == electronicServices.keys.length - 1
+                                  ? 0
+                                  : 12,
                         ),
                         child: _buildServiceOption(
                           details['label']!,
@@ -431,17 +473,18 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            'Lanjut',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              'Lanjut',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -482,7 +525,10 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? const Color(0xFF1A2B66).withOpacity(0.3) : Colors.grey.withOpacity(0.1),
+              color:
+                  isSelected
+                      ? const Color(0xFF1A2B66).withOpacity(0.3)
+                      : Colors.grey.withOpacity(0.1),
               blurRadius: isSelected ? 12 : 8,
               offset: const Offset(0, 4),
             ),
@@ -525,7 +571,10 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
   }
 
   Widget _buildDynamicElectronicCategorySection() {
-    final categoriesToShow = mainElectronicCategories[selectedElectronicType]?['subcategories'] as Map<String, dynamic>? ?? {};
+    final categoriesToShow =
+        mainElectronicCategories[selectedElectronicType]?['subcategories']
+            as Map<String, dynamic>? ??
+        {};
 
     return SizedBox(
       height: 160,
@@ -580,7 +629,10 @@ class _ElectronicServicePageState extends State<ElectronicServicePage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? const Color(0xFF1A2B66).withOpacity(0.2) : Colors.grey.withOpacity(0.1),
+              color:
+                  isSelected
+                      ? const Color(0xFF1A2B66).withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

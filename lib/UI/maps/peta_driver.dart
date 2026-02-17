@@ -11,6 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:bantuin/Logic/config.dart';
 import 'package:bantuin/Logic/services/payment_service.dart';
 import 'package:bantuin/UI/pembayaran/duitku_payment_screen.dart';
+import 'package:bantuin/Logic/services/ai_service.dart';
+import 'package:intl/intl.dart';
 
 class PetaGelap extends StatefulWidget {
   final String orderId;
@@ -44,6 +46,43 @@ class _PetaGelapState extends State<PetaGelap> {
   void initState() {
     super.initState();
     _startLocationUpdates();
+  }
+
+  bool _isAnalyzing = false;
+
+  Future<void> _analyzeWithAI(Map<String, dynamic> orderData) async {
+    setState(() => _isAnalyzing = true);
+
+    try {
+      final AIService _aiService = AIService();
+
+      String type = orderData['details']['type'] ?? 'Kendaraan';
+      String model = orderData['details']['categoryType'] ?? '-';
+      String complaint = orderData['description'] ?? '';
+      String location = "Indonesia";
+
+      final result = await _aiService.predictPrice(
+        vehicleType: type,
+        vehicleModel: model,
+        complaint: complaint,
+        location: location,
+      );
+
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.orderId)
+          .update({'aiPrediction': result});
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Analisa AI Selesai!")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal analisa: $e")));
+    } finally {
+      if (mounted) setState(() => _isAnalyzing = false);
+    }
   }
 
   Future<void> _getPolyline(LatLng start, LatLng end) async {
@@ -224,8 +263,7 @@ class _PetaGelapState extends State<PetaGelap> {
         throw Exception(result['message']);
       }
     } catch (e) {
-      if (mounted && Navigator.canPop(context))
-        Navigator.pop(context);
+      if (mounted && Navigator.canPop(context)) Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal: $e'), backgroundColor: Colors.red),
       );
@@ -412,27 +450,45 @@ class _PetaGelapState extends State<PetaGelap> {
     final isCustomer = user.uid == orderData['customerId'];
     final isProvider = user.uid == orderData['providerId'];
 
-    if (status == 'pending' || status == 'accepted' || status == 'processing') {
-      return _buildProviderEnRouteWidget(isCustomer, providerId, orderData);
-    }
-    if (status == 'work_done') {
-      return _buildPaymentFlowWidget(
-        isCustomer,
-        isProvider,
-        paymentStatus,
-        finalAmount,
-        orderData,
-      );
-    }
-    if (status == 'completed') {
-      return _buildCompletedWidget(isCustomer, providerId);
-    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isCustomer) _buildAIAnalysisCard(orderData),
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text("Status Pesanan: ${_capitalizeFirstLetter(status)}"),
-      ),
+        Builder(
+          builder: (context) {
+            if (status == 'pending' ||
+                status == 'accepted' ||
+                status == 'processing') {
+              return _buildProviderEnRouteWidget(
+                isCustomer,
+                providerId,
+                orderData,
+              );
+            }
+            if (status == 'work_done') {
+              return _buildPaymentFlowWidget(
+                isCustomer,
+                isProvider,
+                paymentStatus,
+                finalAmount,
+                orderData,
+              );
+            }
+            if (status == 'completed') {
+              return _buildCompletedWidget(isCustomer, providerId);
+            }
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "Status Pesanan: ${_capitalizeFirstLetter(status)}",
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -649,6 +705,94 @@ class _PetaGelapState extends State<PetaGelap> {
     }
 
     return const SizedBox.shrink();
+  }
+
+  Widget _buildAIAnalysisCard(Map<String, dynamic> orderData) {
+    var prediction = orderData['aiPrediction'];
+
+    if (prediction == null) {
+      return Container(
+        margin: const EdgeInsets.all(16),
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: _isAnalyzing ? null : () => _analyzeWithAI(orderData),
+          icon:
+              _isAnalyzing
+                  ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : const Icon(Icons.psychology, color: Colors.white),
+          label: Text(
+            _isAnalyzing
+                ? "Sedang Menganalisa..."
+                : "Minta Analisa & Estimasi AI",
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple.shade700,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.purple.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.purple.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.auto_awesome, color: Colors.purple.shade700, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                "Diagnosa AI",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purple.shade900,
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          Text(
+            "${prediction['analysis']}",
+            style: const TextStyle(fontSize: 13),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Estimasi Biaya:",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              Text(
+                "Rp ${NumberFormat('#,###', 'id_ID').format(prediction['min_price'])} - ${NumberFormat('#,###', 'id_ID').format(prediction['max_price'])}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade700,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildCompletedWidget(bool isCustomer, String? providerId) {
