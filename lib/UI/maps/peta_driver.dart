@@ -11,8 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:bantuin/Logic/config.dart';
 import 'package:bantuin/Logic/services/payment_service.dart';
 import 'package:bantuin/UI/pembayaran/duitku_payment_screen.dart';
-import 'package:bantuin/Logic/services/ai_service.dart'; // Import Service AI
-import 'package:intl/intl.dart'; // Import untuk format Rupiah
+import 'package:bantuin/Logic/services/ai_service.dart'; 
+import 'package:intl/intl.dart'; 
 
 class PetaGelap extends StatefulWidget {
   final String orderId;
@@ -48,8 +48,7 @@ class _PetaGelapState extends State<PetaGelap> {
     _startLocationUpdates();
   }
 
-  // --- FUNGSI BARU: ANALISA AI DI MAPS ---
-  bool _isAnalyzing = false; // Loading state
+  bool _isAnalyzing = false; 
 
   Future<void> _analyzeWithAI(Map<String, dynamic> orderData) async {
     setState(() => _isAnalyzing = true);
@@ -57,13 +56,11 @@ class _PetaGelapState extends State<PetaGelap> {
     try {
       final AIService _aiService = AIService();
 
-      // Ambil data dari pesanan yang sedang berjalan
       String type = orderData['details']['type'] ?? 'Kendaraan';
       String model = orderData['details']['categoryType'] ?? '-';
       String complaint = orderData['description'] ?? '';
-      String location = "Indonesia"; // Default atau ambil dari lokasi user
+      String location = "Indonesia"; 
 
-      // Panggil AI
       final result = await _aiService.predictPrice(
         vehicleType: type,
         vehicleModel: model,
@@ -71,13 +68,11 @@ class _PetaGelapState extends State<PetaGelap> {
         location: location,
       );
 
-      // SIMPAN HASIL KE FIRESTORE (PENTING!)
-      // Supaya nanti di halaman Detail Pesanan, hasilnya otomatis muncul
       await FirebaseFirestore.instance
           .collection('orders')
           .doc(widget.orderId)
           .update({
-            'aiPrediction': result, // Kita simpan object JSON hasil AI
+            'aiPrediction': result, 
           });
 
       ScaffoldMessenger.of(
@@ -457,16 +452,11 @@ class _PetaGelapState extends State<PetaGelap> {
     final isCustomer = user.uid == orderData['customerId'];
     final isProvider = user.uid == orderData['providerId'];
 
-    // KITA BUNGKUS DENGAN COLUMN AGAR BISA NAMBAH WIDGET AI DI ATASNYA
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // 1. WIDGET AI (Hanya muncul untuk customer)
-        // Letaknya paling atas, jadi muncul duluan sebelum status driver
         if (isCustomer) _buildAIAnalysisCard(orderData),
 
-        // 2. LOGIKA TAMPILAN STATUS LAMA
-        // Kita pakai Builder supaya logika 'if-return' lama tetap jalan
         Builder(
           builder: (context) {
             if (status == 'pending' ||
@@ -490,7 +480,6 @@ class _PetaGelapState extends State<PetaGelap> {
             if (status == 'completed') {
               return _buildCompletedWidget(isCustomer, providerId);
             }
-            // Ini yang "return Center" tadi (Default kalau status aneh)
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -721,10 +710,8 @@ class _PetaGelapState extends State<PetaGelap> {
   }
 
   Widget _buildAIAnalysisCard(Map<String, dynamic> orderData) {
-    // Cek apakah di database SUDAH ada hasil prediksi?
     var prediction = orderData['aiPrediction'];
 
-    // KASUS 1: Belum ada prediksi -> Tampilkan Tombol
     if (prediction == null) {
       return Container(
         margin: const EdgeInsets.all(16),
@@ -732,10 +719,9 @@ class _PetaGelapState extends State<PetaGelap> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- NOTE KECIL (TIPS) ---
             Container(
               padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(bottom: 10), // Jarak ke tombol
+              margin: const EdgeInsets.only(bottom: 10), 
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(8),
@@ -756,7 +742,6 @@ class _PetaGelapState extends State<PetaGelap> {
               ),
             ),
 
-            // -------------------------
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -793,7 +778,6 @@ class _PetaGelapState extends State<PetaGelap> {
       );
     }
 
-    // KASUS 2: Sudah ada prediksi -> Tampilkan Hasil
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
