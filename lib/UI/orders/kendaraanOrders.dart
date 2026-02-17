@@ -3,7 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 import 'package:bantuin/Logic/services/order_service.dart';
 
 class VehicleServicePage extends StatefulWidget {
@@ -25,17 +24,41 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
   Position? _currentPosition;
 
   final Map<String, Map<String, dynamic>> carCategories = {
-    'sedan': {'label': 'Sedan', 'image': 'assets/images/vehicles/mobil/sedan.png'},
-    'family': {'label': 'Family Car', 'image': 'assets/images/vehicles/mobil/family.png'},
-    'pickup': {'label': 'Mobil Bak', 'image': 'assets/images/vehicles/mobil/bak.png'},
-    'sport': {'label': 'Sport', 'image': 'assets/images/vehicles/mobil/sport.png'},
+    'sedan': {
+      'label': 'Sedan',
+      'image': 'assets/images/vehicles/mobil/sedan.png',
+    },
+    'family': {
+      'label': 'Family Car',
+      'image': 'assets/images/vehicles/mobil/family.png',
+    },
+    'pickup': {
+      'label': 'Mobil Bak',
+      'image': 'assets/images/vehicles/mobil/bak.png',
+    },
+    'sport': {
+      'label': 'Sport',
+      'image': 'assets/images/vehicles/mobil/sport.png',
+    },
   };
 
   final Map<String, Map<String, dynamic>> motorcycleCategories = {
-    'matic': {'label': 'Matic', 'image': 'assets/images/vehicles/motor/matic.png'},
-    'bebek': {'label': 'Bebek', 'image': 'assets/images/vehicles/motor/bebek.png'},
-    'cruiser': {'label': 'Cruiser', 'image': 'assets/images/vehicles/motor/cruiser.png'},
-    'trail': {'label': 'Trail', 'image': 'assets/images/vehicles/motor/Trail.png'},
+    'matic': {
+      'label': 'Matic',
+      'image': 'assets/images/vehicles/motor/matic.png',
+    },
+    'bebek': {
+      'label': 'Bebek',
+      'image': 'assets/images/vehicles/motor/bebek.png',
+    },
+    'cruiser': {
+      'label': 'Cruiser',
+      'image': 'assets/images/vehicles/motor/cruiser.png',
+    },
+    'trail': {
+      'label': 'Trail',
+      'image': 'assets/images/vehicles/motor/Trail.png',
+    },
   };
 
   @override
@@ -44,7 +67,6 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
     _getCurrentLocation();
   }
 
-  
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
@@ -53,17 +75,26 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
       permission = await Geolocator.requestPermission();
     }
     try {
-      _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      if (mounted) setState(() => lokasiController.text = 'Lokasi saat ini terdeteksi');
+      _currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      if (mounted)
+        setState(() => lokasiController.text = 'Lokasi saat ini terdeteksi');
     } catch (e) {
-      if (mounted) setState(() => lokasiController.text = 'Gagal mendapatkan lokasi');
+      if (mounted)
+        setState(() => lokasiController.text = 'Gagal mendapatkan lokasi');
     }
   }
 
   Future<void> _createOrder() async {
     User? user = FirebaseAuth.instance.currentUser;
-    if (user == null || description.isEmpty || lokasiController.text.isEmpty || _currentPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lengkapi data dan lokasi Anda')));
+    if (user == null ||
+        description.isEmpty ||
+        lokasiController.text.isEmpty ||
+        _currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lengkapi data dan lokasi Anda')),
+      );
       return;
     }
 
@@ -82,7 +113,10 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
         },
         'description': description,
         'orderAddress': lokasiController.text.trim(),
-        'customerLocation': GeoPoint(_currentPosition!.latitude, _currentPosition!.longitude),
+        'customerLocation': GeoPoint(
+          _currentPosition!.latitude,
+          _currentPosition!.longitude,
+        ),
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
       };
@@ -90,15 +124,22 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
       final orderRef = await _orderService.createNewOrder(orderData);
 
       if (!mounted) return;
-      Navigator.pushNamed(context, '/peta', arguments: {'orderId': orderRef.id});
+      Navigator.pushNamed(
+        context,
+        '/peta',
+        arguments: {'orderId': orderRef.id},
+      );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F1F0),
@@ -148,11 +189,42 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
                   ),
                 ),
                 const SizedBox(height: 15),
+
                 const Text(
                   'Jelaskan Kendala',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 15),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Tips: Jelaskan kerusakan secara rinci (cth: bunyi mesin, asap, error code) agar AI dapat mengestimasi harga dengan akurat.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
                 SizedBox(
                   height: 50,
                   width: double.infinity,
@@ -238,17 +310,18 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            'Lanjut',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              'Lanjut',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -260,9 +333,9 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
     );
   }
 
-  
   Widget _buildDynamicCategorySection() {
-    final categoriesToShow = selectedVehicleType == 'mobil' ? carCategories : motorcycleCategories;
+    final categoriesToShow =
+        selectedVehicleType == 'mobil' ? carCategories : motorcycleCategories;
 
     return SizedBox(
       height: 160,
@@ -278,17 +351,18 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
             margin: EdgeInsets.only(
               right: index == categoriesToShow.length - 1 ? 0 : 12,
             ),
-            child: selectedVehicleType == 'mobil'
-                ? _buildCarCategoryOptionPortrait(
-                    details['label']!,
-                    details['image']!,
-                    key,
-                  )
-                : _buildMotorcycleCategoryOptionPortrait(
-                    details['label']!,
-                    details['image']!,
-                    key,
-                  ),
+            child:
+                selectedVehicleType == 'mobil'
+                    ? _buildCarCategoryOptionPortrait(
+                      details['label']!,
+                      details['image']!,
+                      key,
+                    )
+                    : _buildMotorcycleCategoryOptionPortrait(
+                      details['label']!,
+                      details['image']!,
+                      key,
+                    ),
           );
         },
       ),
@@ -323,7 +397,10 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? const Color(0xFF1A2B66).withOpacity(0.2) : Colors.grey.withOpacity(0.1),
+              color:
+                  isSelected
+                      ? const Color(0xFF1A2B66).withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -403,7 +480,10 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? const Color(0xFF1A2B66).withOpacity(0.2) : Colors.grey.withOpacity(0.1),
+              color:
+                  isSelected
+                      ? const Color(0xFF1A2B66).withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -477,12 +557,16 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? const Color(0xFF1A2B66) : Colors.grey.shade300,
+              color:
+                  isSelected ? const Color(0xFF1A2B66) : Colors.grey.shade300,
               width: isSelected ? 5 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: isSelected ? const Color(0xFF1A2B66).withOpacity(0.3) : Colors.grey.withOpacity(0.1),
+                color:
+                    isSelected
+                        ? const Color(0xFF1A2B66).withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.1),
                 blurRadius: isSelected ? 12 : 8,
                 offset: const Offset(0, 4),
               ),
@@ -497,7 +581,8 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
                   label,
                   style: TextStyle(
                     fontSize: isSelected ? 16 : 14,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? const Color(0xFF1A2B66) : Colors.black,
                   ),
                 ),
@@ -639,7 +724,10 @@ class _VehicleServicePageState extends State<VehicleServicePage> {
             ),
             Expanded(
               child: AnimatedAlign(
-                alignment: isSelected ? Alignment.center : Alignment(initialHorizontalAlignment, 0),
+                alignment:
+                    isSelected
+                        ? Alignment.center
+                        : Alignment(initialHorizontalAlignment, 0),
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.easeInOut,
                 child: Padding(

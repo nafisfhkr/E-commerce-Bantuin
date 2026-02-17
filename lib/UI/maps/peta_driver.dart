@@ -11,8 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:bantuin/Logic/config.dart';
 import 'package:bantuin/Logic/services/payment_service.dart';
 import 'package:bantuin/UI/pembayaran/duitku_payment_screen.dart';
-import 'package:bantuin/Logic/services/ai_service.dart'; 
-import 'package:intl/intl.dart'; 
+import 'package:bantuin/Logic/services/ai_service.dart';
+import 'package:intl/intl.dart';
 
 class PetaGelap extends StatefulWidget {
   final String orderId;
@@ -48,7 +48,7 @@ class _PetaGelapState extends State<PetaGelap> {
     _startLocationUpdates();
   }
 
-  bool _isAnalyzing = false; 
+  bool _isAnalyzing = false;
 
   Future<void> _analyzeWithAI(Map<String, dynamic> orderData) async {
     setState(() => _isAnalyzing = true);
@@ -59,7 +59,7 @@ class _PetaGelapState extends State<PetaGelap> {
       String type = orderData['details']['type'] ?? 'Kendaraan';
       String model = orderData['details']['categoryType'] ?? '-';
       String complaint = orderData['description'] ?? '';
-      String location = "Indonesia"; 
+      String location = "Indonesia";
 
       final result = await _aiService.predictPrice(
         vehicleType: type,
@@ -71,9 +71,7 @@ class _PetaGelapState extends State<PetaGelap> {
       await FirebaseFirestore.instance
           .collection('orders')
           .doc(widget.orderId)
-          .update({
-            'aiPrediction': result, 
-          });
+          .update({'aiPrediction': result});
 
       ScaffoldMessenger.of(
         context,
@@ -716,64 +714,32 @@ class _PetaGelapState extends State<PetaGelap> {
       return Container(
         margin: const EdgeInsets.all(16),
         width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(bottom: 10), 
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.info_outline, size: 18, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      "Tips: Agar estimasi harga akurat, mohon jelaskan keluhan/masalah dengan sedetail mungkin di deskripsi pesanan.",
-                      style: TextStyle(fontSize: 12, color: Colors.black87),
+        child: ElevatedButton.icon(
+          onPressed: _isAnalyzing ? null : () => _analyzeWithAI(orderData),
+          icon:
+              _isAnalyzing
+                  ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
                     ),
-                  ),
-                ],
-              ),
+                  )
+                  : const Icon(Icons.psychology, color: Colors.white),
+          label: Text(
+            _isAnalyzing
+                ? "Sedang Menganalisa..."
+                : "Minta Analisa & Estimasi AI",
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple.shade700,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed:
-                    _isAnalyzing ? null : () => _analyzeWithAI(orderData),
-                icon:
-                    _isAnalyzing
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                        : const Icon(Icons.psychology, color: Colors.white),
-                label: Text(
-                  _isAnalyzing
-                      ? "Sedang Menganalisa..."
-                      : "Minta Analisa & Estimasi AI",
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade700,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       );
     }
