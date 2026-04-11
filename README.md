@@ -31,6 +31,8 @@
 - Ahmad Bintang Rafli 
 
 - Jibran Tsaqif
+  
+- Donna Alifa Pratika Sari
 
 ---
 
